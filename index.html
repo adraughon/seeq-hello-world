@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seeq JavaScript Test Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+        }
+        .status {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        #output {
+            background: #e8f5e9;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #4caf50;
+            min-height: 50px;
+        }
+        .success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .info {
+            color: #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Seeq JavaScript Test Tool</h1>
+        
+        <div class="status">
+            <div><strong>JavaScript Status:</strong> <span id="js-status" class="success">✓ Loaded Successfully</span></div>
+            <div><strong>Load Time:</strong> <span id="load-time"></span></div>
+            <div><strong>User Agent:</strong> <span id="user-agent"></span></div>
+            <div><strong>Current URL:</strong> <span id="current-url"></span></div>
+        </div>
+
+        <h3>Interactive Tests:</h3>
+        <button onclick="testAlert()">Test Alert</button>
+        <button onclick="testConsole()">Test Console Log</button>
+        <button onclick="testDOM()">Test DOM Manipulation</button>
+        <button onclick="testFetch()">Test Fetch API</button>
+        <button onclick="testLocalStorage()">Test LocalStorage</button>
+
+        <div id="output">
+            <strong>Output:</strong>
+            <div id="results"></div>
+        </div>
+
+        <div class="status" style="margin-top: 20px;">
+            <strong>Query Parameters:</strong>
+            <div id="query-params" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Immediately invoked to show JS is working
+        (function() {
+            console.log('🎉 JavaScript executed successfully!');
+            
+            // Update load time
+            document.getElementById('load-time').textContent = new Date().toLocaleString();
+            
+            // Update user agent
+            document.getElementById('user-agent').textContent = navigator.userAgent.substring(0, 80) + '...';
+            
+            // Update current URL
+            document.getElementById('current-url').textContent = window.location.href;
+            
+            // Parse and display query parameters
+            const params = new URLSearchParams(window.location.search);
+            const queryDiv = document.getElementById('query-params');
+            
+            if (params.toString()) {
+                let paramsHTML = '<ul style="margin: 5px 0; padding-left: 20px;">';
+                params.forEach((value, key) => {
+                    paramsHTML += `<li><strong>${key}:</strong> ${value}</li>`;
+                });
+                paramsHTML += '</ul>';
+                queryDiv.innerHTML = paramsHTML;
+            } else {
+                queryDiv.innerHTML = '<em style="color: #999;">No query parameters detected</em>';
+            }
+        })();
+
+        // Interactive test functions
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+        }
+
+        function testAlert() {
+            alert('JavaScript Alert is working! ✓');
+            addResult('Alert test completed', 'success');
+        }
+
+        function testConsole() {
+            console.log('Console.log test - check browser DevTools!');
+            console.table({
+                test: 'Console Test',
+                status: 'Success',
+                timestamp: new Date().toISOString()
+            });
+            addResult('Console.log test completed - check browser console (F12)', 'success');
+        }
+
+        function testDOM() {
+            const newElement = document.createElement('div');
+            newElement.innerHTML = '✓ DOM Manipulation successful!';
+            newElement.style.color = '#4caf50';
+            newElement.style.fontWeight = 'bold';
+            newElement.style.marginTop = '10px';
+            document.getElementById('results').appendChild(newElement);
+            addResult('DOM element created and appended', 'success');
+        }
+
+        async function testFetch() {
+            addResult('Testing Fetch API...', 'info');
+            try {
+                const response = await fetch('https://api.github.com/zen');
+                const data = await response.text();
+                addResult(`Fetch successful! GitHub Zen: "${data}"`, 'success');
+            } catch (error) {
+                addResult(`Fetch error: ${error.message}`, 'error');
+            }
+        }
+
+        function testLocalStorage() {
+            try {
+                const testKey = 'seeq_test_' + Date.now();
+                const testValue = 'JavaScript LocalStorage works!';
+                
+                localStorage.setItem(testKey, testValue);
+                const retrieved = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (retrieved === testValue) {
+                    addResult('LocalStorage test: ✓ Success', 'success');
+                } else {
+                    addResult('LocalStorage test: ✗ Failed', 'error');
+                }
+            } catch (error) {
+                addResult(`LocalStorage error: ${error.message}`, 'error');
+            }
+        }
+
+        // Log successful initialization
+        console.log('%c Seeq Test Tool Loaded Successfully! ', 'background: #667eea; color: white; font-size: 16px; padding: 5px;');
+    </script>
+</body>
+</html>
